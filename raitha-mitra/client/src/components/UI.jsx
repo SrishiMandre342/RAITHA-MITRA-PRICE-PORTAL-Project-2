@@ -61,7 +61,7 @@ export function ListingCard({ listing, onWishlist, isWishlisted, onClick }) {
       <div className="h-28 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center relative">
         {listing.images?.[0]?.url ? (
           <img
-            src={`${process.env.REACT_APP_API_URL?.replace('/api', '')}${listing.images[0].url}`}
+            src={listing.images[0].url}
             alt={listing.cropName}
             className="w-full h-full object-cover"
           />

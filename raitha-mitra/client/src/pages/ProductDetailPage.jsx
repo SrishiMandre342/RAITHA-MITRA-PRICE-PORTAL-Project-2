@@ -171,7 +171,7 @@ export default function ProductDetailPage() {
       {/* Hero image */}
       <div className="h-56 rounded-3xl bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center overflow-hidden mb-4 relative">
         {listing.images?.[0]?.url
-          ? <img src={`${SERVER}${listing.images[0].url}`} alt={listing.cropName} className="w-full h-full object-cover" />
+          ? <img src={listing.images[0].url} alt={listing.cropName} className="w-full h-full object-cover" />
           : <span className="text-9xl">{emoji}</span>
         }
         <button onClick={toggleWish}
