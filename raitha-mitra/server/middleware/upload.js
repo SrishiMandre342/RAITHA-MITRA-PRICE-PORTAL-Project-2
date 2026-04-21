@@ -12,12 +12,16 @@ cloudinary.config({
 // Store images directly on Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
+  params: async (req, file) => {
+  return {
     folder:         'raitha-mitra',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    resource_type:  'image',
     transformation: [{ width: 800, height: 600, crop: 'limit' }],
+  };
+},
   },
-});
+);
 
 const fileFilter = (req, file, cb) => {
   const allowed = /jpeg|jpg|png|webp/;
