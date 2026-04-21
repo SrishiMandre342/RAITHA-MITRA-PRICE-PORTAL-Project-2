@@ -112,14 +112,16 @@ router.post(
       }
 
       // Process uploaded images
+      
+     console.log('Uploaded files:', req.files);
      const images = req.files
-  ? req.files.map((file, idx) => ({
-      url: file.path,        // Cloudinary URL
+      ? req.files.map((file, idx) => ({
+      url: file.path,
       filename: file.filename,
       isMain: idx === 0,
     }))
   : [];
-  
+
       const listing = await Listing.create({
         seller: req.user._id,
         sellerName: req.user.name,
