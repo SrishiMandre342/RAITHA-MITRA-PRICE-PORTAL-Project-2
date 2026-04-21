@@ -54,16 +54,19 @@ export function PriceCard({ price }) {
   );
 }
 
-// ─── Listing card ─────────────────────────────────────────────────────────────
 export function ListingCard({ listing, onWishlist, isWishlisted, onClick }) {
+  const imgUrl = listing.images?.[0]?.url || '';
+  const isCloudinary = imgUrl.startsWith('https://res.cloudinary.com');
+
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden card-hover cursor-pointer" onClick={onClick}>
       <div className="h-28 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center relative">
-        {listing.images?.[0]?.url ? (
+        {isCloudinary ? (
           <img
-            src={listing.images[0].url}
+            src={imgUrl}
             alt={listing.cropName}
             className="w-full h-full object-cover"
+            onError={(e) => { e.target.style.display = 'none'; }}
           />
         ) : (
           <span className="text-5xl">{listing.emoji || '🌿'}</span>
