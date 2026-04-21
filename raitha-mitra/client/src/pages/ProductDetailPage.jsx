@@ -14,8 +14,6 @@ import api from '../utils/api';
 import { CROP_EMOJI, timeAgo } from '../utils/constants';
 import toast from 'react-hot-toast';
 
-const SERVER = (process.env.REACT_APP_API_URL || 'http://localhost:5000/api').replace('/api', '');
-
 function formatPhone(raw) {
   if (!raw) return null;
   const digits = raw.replace(/\D/g, '');
