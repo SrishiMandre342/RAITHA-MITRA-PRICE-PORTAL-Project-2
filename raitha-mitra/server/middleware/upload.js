@@ -1,59 +1,43 @@
-/**
- * Upload Middleware
- * Multer configuration for crop image uploads
- */
-
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
-// Ensure uploads directory exists
-const uploadDir = process.env.UPLOAD_PATH || './uploads';
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Configure cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-// ─── Storage config ───────────────────────────────────────────────────────────
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    // Unique filename: timestamp + random + original extension
-    const uniqueName = `crop_${Date.now()}_${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
+// Store images directly on Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder:         'raitha-mitra',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation: [{ width: 800, height: 600, crop: 'limit' }],
   },
 });
 
-// ─── File filter: images only ─────────────────────────────────────────────────
 const fileFilter = (req, file, cb) => {
-  const allowed = /jpeg|jpg|png|gif|webp/;
-  const extOk = allowed.test(path.extname(file.originalname).toLowerCase());
-  const mimeOk = allowed.test(file.mimetype);
-
-  if (extOk && mimeOk) {
+  const allowed = /jpeg|jpg|png|webp/;
+  if (allowed.test(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed'), false);
+    cb(new Error('Only image files allowed'), false);
   }
 };
 
 const upload = multer({
   storage,
   fileFilter,
-  limits: {
-    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024, // 5MB default
-  },
+  limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-// Error handler wrapper for multer
 const handleUploadError = (uploadFn) => (req, res, next) => {
   uploadFn(req, res, (err) => {
     if (err instanceof multer.MulterError) {
-      if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(400).json({ error: 'File too large. Maximum size is 5MB.' });
-      }
-      return res.status(400).json({ error: err.message });
+      return res.status(400).json({ error: 'File too large. Max 5MB.' });
     } else if (err) {
       return res.status(400).json({ error: err.message });
     }
