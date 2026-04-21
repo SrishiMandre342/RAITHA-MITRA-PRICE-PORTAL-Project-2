@@ -112,16 +112,13 @@ router.post(
       }
 
       // Process uploaded images
-      
-    const images = req.files
-  ? req.files.map((file, idx) => ({
-      url: file.path || file.secure_url || '',
-      filename: file.filename || file.public_id || '',
-      isMain: idx === 0,
-    }))
-  : [];
-
-console.log('Image URLs saved:', images.map(i => i.url));
+      const images = req.files
+        ? req.files.map((file, idx) => ({
+            url: `/uploads/${file.filename}`,
+            filename: file.filename,
+            isMain: idx === 0,
+          }))
+        : [];
 
       const listing = await Listing.create({
         seller: req.user._id,
